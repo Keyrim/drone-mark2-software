@@ -1,6 +1,4 @@
 {
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "cmake.configureOnOpen": true,
   "files.encoding": "utf8",
   "editor.renderWhitespace": "all",
   "editor.rulers": [
