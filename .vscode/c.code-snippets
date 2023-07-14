@@ -10,8 +10,8 @@
             " * @see ${TM_FILENAME_BASE}.c",
 			" */",
 			"",
-			"#ifndef ${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_",
-			"#define ${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_",
+			"#ifndef _${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_",
+			"#define _${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_",
 			"",
 			"/* ************************************* Includes *********************************************** */",
 			"",
@@ -25,7 +25,7 @@
 			"",
 			"/* ************************************* Public callback functions ****************************** */",
 			"",
-			"#endif /* ${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_ */"
+			"#endif /* _${TM_FILENAME_BASE/(.*)/${1:/upcase}/}_H_ */"
 		],
 		"description": "Header file template for C language"
 	},
