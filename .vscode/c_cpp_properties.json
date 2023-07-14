@@ -1,0 +1,22 @@
+{
+  "env": {
+    "myDefaultIncludePath": ["${workspaceFolder}"],
+    "myCompilerPath": "${env:ARM_TOOLCHAIN}/bin/arm-none-eabi-gcc"
+  },
+  "configurations": [
+    {
+      "name": "Mac",
+      "intelliSenseMode": "clang-x64",
+      "includePath": ["${myDefaultIncludePath}", "${workspaceFolder}/**" , "${env:ARM_TOOLCHAIN}/lib/gcc/arm-none-eabi/11.3.1/"],
+      "defines": ["FOO", "BAR=100"],
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "browse": {
+        "path": ["${workspaceFolder}"],
+        "limitSymbolsToIncludedHeaders": true,
+        "databaseFilename": ""
+      }
+    }
+  ],
+  "version": 4
+}

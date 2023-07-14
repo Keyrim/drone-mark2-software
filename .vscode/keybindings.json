@@ -1,0 +1,4 @@
+[
+    { "key": "ctrl+d",          "command": "-bookmarks.toggle" },
+    { "key": "ctrl+d",          "command": "editor.action.deleteLine"}
+]
