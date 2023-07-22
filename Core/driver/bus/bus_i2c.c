@@ -24,6 +24,8 @@ typedef enum
 static int i2c_init(void);
 static int i2c_mem_write(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size);
 static int i2c_mem_read(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size);
+static int i2c_mem_write_dma(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size);
+static int i2c_mem_read_dma(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size);
 static int i2c_write(uint8_t bus_id, uint8_t dev, uint8_t* data, uint8_t size);
 static int i2c_read(uint8_t bus_id, uint8_t dev, uint8_t* data, uint8_t size);
 static int i2c_deinit(void);
@@ -40,6 +42,8 @@ bus_driver_t bus_driver_i2c =
     .init = i2c_init,
     .mem_write = i2c_mem_write,
     .mem_read = i2c_mem_read,
+    .mem_write_dma = i2c_mem_write_dma,
+    .mem_read_dma = i2c_mem_read_dma,
     .write = i2c_write,
     .read = i2c_read,
     .deinit = i2c_deinit,
@@ -62,6 +66,20 @@ static int i2c_mem_read(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data,
 {
     HAL_StatusTypeDef result = HAL_I2C_Mem_Read(i2c[bus_id], dev, mem, I2C_MEMADD_SIZE_8BIT,
                                                 data, size, BUS_I2C_OPERATION_TIMEOUT_MS);
+    return (result == HAL_OK) ? 0 : -1;
+}
+
+static int i2c_mem_write_dma(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size)
+{
+    HAL_StatusTypeDef result = HAL_I2C_Mem_Write_DMA(i2c[bus_id], dev, mem, I2C_MEMADD_SIZE_8BIT,
+                                                     data, size);
+    return (result == HAL_OK) ? 0 : -1;
+}
+
+static int i2c_mem_read_dma(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data, uint8_t size)
+{
+    HAL_StatusTypeDef result = HAL_I2C_Mem_Read_DMA(i2c[bus_id], dev, mem, I2C_MEMADD_SIZE_8BIT,
+                                                    data, size);
     return (result == HAL_OK) ? 0 : -1;
 }
 
