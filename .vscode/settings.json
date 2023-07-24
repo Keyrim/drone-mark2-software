@@ -3,5 +3,8 @@
   "editor.renderWhitespace": "all",
   "editor.rulers": [
       100
-  ]
+  ],
+  "files.associations": {
+    "bus.h": "c"
+  }
 }

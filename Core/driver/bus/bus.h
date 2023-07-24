@@ -15,18 +15,47 @@
 /* ************************************* Public macros ****************************************** */
 
 /* ************************************* Public type definition ********************************* */
+typedef enum
+{
+    BUS_1 = 0,
+    BUS_COUNT
+} bus_id_t;
+
+
+typedef void (*bus_transfer_complete_cb_t)(void);
+typedef void (*bus_transfer_half_complete_cb_t)(void);
+
+typedef struct
+{
+    bus_transfer_complete_cb_t transfer_cplt;               /**< Transfer complete callback */
+    bus_transfer_half_complete_cb_t half_transfer_cplt;     /**< Half transfer complete callback */
+} bus_cb_t;
+
+typedef struct
+{
+    bus_id_t bus_id;        /**< Bus ID (I2C 1, 2, 3, ...)*/
+    uint8_t addr;           /**< Device adress */
+    bus_cb_t* cb;           /**< Bus callback */
+}dev_info_t;
+
+typedef struct
+{
+    uint16_t addr;          /**< Memory address */
+    uint8_t* data;          /**< Data buffer (in or out) */
+    uint8_t size;           /**< Data size */
+}mem_info_t;
+
+
+
 typedef int (*bus_init_t)(void);
-typedef int (*bus_mem_write_t)(uint8_t bus_id, uint8_t dev, uint8_t mem,uint8_t* data,
-                               uint8_t size);
-typedef int (*bus_mem_read_t)(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data,
-                              uint8_t size);
-typedef int (*bus_mem_write_dma_t)(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data,
-                                   uint8_t size);
-typedef int (*bus_mem_read_dma_t)(uint8_t bus_id, uint8_t dev, uint8_t mem, uint8_t* data,
-                                  uint8_t size);
-typedef int (*bus_write_t)(uint8_t bus_id, uint8_t dev, uint8_t* data, uint8_t size);
-typedef int (*bus_read_t)(uint8_t bus_id, uint8_t dev, uint8_t* data, uint8_t size);
+typedef int (*bus_mem_write_t)(dev_info_t* dev_info, mem_info_t* mem_info);
+typedef int (*bus_mem_read_t)(dev_info_t* dev_info, mem_info_t* mem_info);
+typedef int (*bus_mem_write_dma_t)(dev_info_t* dev_info, mem_info_t* mem_info);
+typedef int (*bus_mem_read_dma_t)(dev_info_t* dev_info, mem_info_t* mem_info);
+typedef int (*bus_write_t)(dev_info_t* dev_info, uint8_t* data, uint8_t size);
+typedef int (*bus_read_t)(dev_info_t* dev_info, uint8_t* data, uint8_t size);
 typedef int (*bus_deinit_t)(void);
+
 
 /**
  * @brief Bus driver structure
@@ -47,9 +76,10 @@ typedef struct
  * @brief Bus structure
  */
 typedef struct
-{
-    uint8_t bus_id;         /**< Bus ID (spi or I2C 1, 2, 3, ...)*/
-    bus_driver_t* driver;   /**< Bus driver containings the methods to use */
+{   
+    uint8_t bus_id;             /**< Bus ID (spi or I2C 1, 2, 3, ...)*/
+    bus_driver_t* driver;       /**< Bus driver containings the methods to use */
+    dev_info_t* current_dev;    /**< Current device informations (null when bus not used)*/
 } bus_t;
 
 /* ************************************* Public variables *************************************** */
