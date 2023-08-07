@@ -7,10 +7,10 @@
     },
     "configurations": [
         {
-            "name": "Mac",
+            "name": "Windows",
             "intelliSenseMode": "clang-x64",
             "includePath": [
-                "${myDefaultIncludePath}",
+                "${workspaceFolder}/**"
                 "${env:ARM_TOOLCHAIN}/lib/gcc/arm-none-eabi/11.3.1/include/"
             ],
             "defines": [

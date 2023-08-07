@@ -33,8 +33,8 @@ typedef struct
 
 typedef struct
 {
-    bus_id_t bus_id;        /**< Bus ID (I2C 1, 2, 3, ...)*/
-    uint8_t addr;           /**< Device adress */
+    bus_t* bus;             /**< Bus pointer */
+    uint8_t addr;           /**< Device adress (after offset) */
     bus_cb_t* cb;           /**< Bus callback */
 }dev_info_t;
 
@@ -45,9 +45,8 @@ typedef struct
     uint8_t size;           /**< Data size */
 }mem_info_t;
 
-
-
 typedef int (*bus_init_t)(void);
+typedef int (*bus_is_device_ready_t)(dev_info_t* dev_info);
 typedef int (*bus_mem_write_t)(dev_info_t* dev_info, mem_info_t* mem_info);
 typedef int (*bus_mem_read_t)(dev_info_t* dev_info, mem_info_t* mem_info);
 typedef int (*bus_mem_write_dma_t)(dev_info_t* dev_info, mem_info_t* mem_info);
@@ -63,6 +62,7 @@ typedef int (*bus_deinit_t)(void);
 typedef struct
 {
     bus_init_t init;                    /**< Bus initialization function */
+    bus_is_device_ready_t is_ready;     /**< Bus device ready function */
     bus_mem_write_t mem_write;          /**< Bus memory write function */
     bus_mem_read_t mem_read;            /**< Bus memory read function */
     bus_mem_write_dma_t mem_write_dma;  /**< Bus memory write function with DMA */
@@ -76,10 +76,9 @@ typedef struct
  * @brief Bus structure
  */
 typedef struct
-{   
-    uint8_t bus_id;             /**< Bus ID (spi or I2C 1, 2, 3, ...)*/
-    bus_driver_t* driver;       /**< Bus driver containings the methods to use */
-    dev_info_t* current_dev;    /**< Current device informations (null when bus not used)*/
+{
+    uint8_t id;                 /**< Bus ID (spi or I2C 1, 2, 3, ...)*/
+    bus_driver_t* driver;       /**< Private use */
 } bus_t;
 
 /* ************************************* Public variables *************************************** */
