@@ -31,6 +31,8 @@ typedef struct
     bus_transfer_half_complete_cb_t half_transfer_cplt;     /**< Half transfer complete callback */
 } bus_cb_t;
 
+typedef struct bus_t bus_t;
+
 typedef struct
 {
     bus_t* bus;             /**< Bus pointer */
@@ -75,7 +77,7 @@ typedef struct
 /**
  * @brief Bus structure
  */
-typedef struct
+typedef struct bus_t
 {
     uint8_t id;                 /**< Bus ID (spi or I2C 1, 2, 3, ...)*/
     bus_driver_t* driver;       /**< Private use */
