@@ -1,15 +1,16 @@
 /**
- * @file gryo_acc_mpu6050.c
+ * @file gyro_acc_mpu6050.c
  * @brief MPU6050 driver source file
  * @author Théo Magne
  * @date 30/07/2023
- * @see gryo_acc_mpu6050.h
+ * @see gyro_acc_mpu6050.h
  */
 
 /* ************************************* Includes *********************************************** */
+#include <math.h>
 #include "bus.h"
 #include "gyro_acc.h"
-#include "gryo_acc_mpu6050.h"
+#include "gyro_acc_mpu6050.h"
 
 
 /* ************************************* Private macros ***************************************** */
@@ -90,7 +91,7 @@ typedef enum
 
 
 /* ************************************* Private functions prototypes *************************** */
-static int mpu6050_init(gyro_acc_t* gyro_acc, gyro_acc_t_config* config, bus_t* bus);
+static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus);
 
 /* ************************************* Private variables ************************************** */
 const static float mpu5050_gyro_data_to_rad_s[] = {
@@ -110,10 +111,10 @@ const static float mpu5050_acc_data_to_g[] = {
 /* ************************************* Public variables *************************************** */
 
 /* ************************************* Private functions ************************************** */
-static mpu6050_acc_range_t mpu6050_get_acc_range_from_config(gyro_range_t* acc_sensi)
+static inline mpu6050_acc_range_t mpu6050_get_acc_range_from_config(acc_range_t acc_range)
 {
     mpu6050_acc_range_t range = MPU_ACC_2G;
-    switch(acc_sensi->sensi)
+    switch(acc_range)
     {
         case ACC_RANGE_LOW:
             range = MPU_ACC_4G;
@@ -130,10 +131,10 @@ static mpu6050_acc_range_t mpu6050_get_acc_range_from_config(gyro_range_t* acc_s
     return range;
 }
 
-static mpu6050_gyro_range_t mpu6050_get_gyro_range_from_config(gyro_range_t* gyro_sensi)
+static inline mpu6050_gyro_range_t mpu6050_get_gyro_range_from_config(gyro_range_t gyro_range)
 {
     mpu6050_gyro_range_t range = MPU_GYRO_250s;
-    switch(gyro_sensi->sensi)
+    switch(gyro_range)
     {
         case GYRO_RANGE_LOW:
             range = MPU_GYRO_500s;
@@ -150,16 +151,15 @@ static mpu6050_gyro_range_t mpu6050_get_gyro_range_from_config(gyro_range_t* gyr
     return range;
 }
 
-static int mpu6050_init(gyro_acc_t* gyro_acc, bus_t* bus, gyro_acc_config_t* config)
+static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
 {
     int ret = 0;
     uint8_t data = 0;
     /* Configure the gyro_acc structure */
     gyro_acc->device.addr = MPU6050_I2C_ADDR;
     gyro_acc->device.bus = bus;
-    gyro_acc->config = *config;
-    mpu6050_acc_range_t acc_mpu_range = mpu6050_get_acc_range_from_config(&config->acc_sensi);
-    mpu6050_gyro_range_t gyro_mpu_range = mpu6050_get_gyro_range_from_config(&config->gyro_sensi);
+    mpu6050_acc_range_t acc_mpu_range = mpu6050_get_acc_range_from_config(gyro_acc->config.acc);
+    mpu6050_gyro_range_t gyro_mpu_range = mpu6050_get_gyro_range_from_config(gyro_acc->config.gyro);
     gyro_acc->acc_convertion = mpu5050_acc_data_to_g[acc_mpu_range];
     gyro_acc->gyro_convertion = mpu5050_gyro_data_to_rad_s[gyro_mpu_range];
 
