@@ -109,6 +109,10 @@ const static float mpu5050_acc_data_to_g[] = {
 };
 
 /* ************************************* Public variables *************************************** */
+gyro_acc_driver_t gyro_acc_mpu6050_driver =
+{
+    .init = mpu6050_init
+};
 
 /* ************************************* Private functions ************************************** */
 static inline mpu6050_acc_range_t mpu6050_get_acc_range_from_config(acc_range_t acc_range)
@@ -156,16 +160,16 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
     int ret = 0;
     uint8_t data = 0;
     /* Configure the gyro_acc structure */
-    gyro_acc->device.addr = MPU6050_I2C_ADDR;
-    gyro_acc->device.bus = bus;
+    gyro_acc->private.device.addr = MPU6050_I2C_ADDR;
+    gyro_acc->private.device.bus = bus;
     mpu6050_acc_range_t acc_mpu_range = mpu6050_get_acc_range_from_config(gyro_acc->config.acc);
     mpu6050_gyro_range_t gyro_mpu_range = mpu6050_get_gyro_range_from_config(gyro_acc->config.gyro);
-    gyro_acc->acc_convertion = mpu5050_acc_data_to_g[acc_mpu_range];
-    gyro_acc->gyro_convertion = mpu5050_gyro_data_to_rad_s[gyro_mpu_range];
+    gyro_acc->config.acc = mpu5050_acc_data_to_g[acc_mpu_range];
+    gyro_acc->config.gyro = mpu5050_gyro_data_to_rad_s[gyro_mpu_range];
 
     /* Configure the MPU6050 */
     /* Check if the mpu answers */
-    ret = bus->driver->is_ready(&gyro_acc->device);
+    ret = bus->driver->is_ready(&gyro_acc->private.device);
     if (ret == 0)
     {
         /* Wake up the mpu */
@@ -176,7 +180,7 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
             .size = 1
         };
         data = 0x80;
-        ret = bus->driver->mem_write(&gyro_acc->device, &mem_info);
+        ret = bus->driver->mem_write(&gyro_acc->private.device, &mem_info);
     }
 
     if (ret == 0)
@@ -189,7 +193,7 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
             .size = 1
         };
         data = 0x03;
-        ret = bus->driver->mem_write(&gyro_acc->device, &mem_info);
+        ret = bus->driver->mem_write(&gyro_acc->private.device, &mem_info);
     }
 
     if (ret == 0)
@@ -201,12 +205,12 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
             .data = &data,
             .size = 1
         };
-        ret = bus->driver->mem_read(&gyro_acc->device, &mem_info);
+        ret = bus->driver->mem_read(&gyro_acc->private.device, &mem_info);
         if (ret == 0)
         {
             data &= 0xE7; // Clear self-test bits [7:5]
             data |= (gyro_mpu_range << 3);
-            ret = bus->driver->mem_write(&gyro_acc->device, &mem_info);
+            ret = bus->driver->mem_write(&gyro_acc->private.device, &mem_info);
         }
     }
 
@@ -219,12 +223,12 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
             .data = &data,
             .size = 1
         };
-        ret = bus->driver->mem_read(&gyro_acc->device, &mem_info);
+        ret = bus->driver->mem_read(&gyro_acc->private.device, &mem_info);
         if (ret == 0)
         {
             data &= 0xE7; // Clear self-test bits [7:5]
             data |= (acc_mpu_range << 3);
-            ret = bus->driver->mem_write(&gyro_acc->device, &mem_info);
+            ret = bus->driver->mem_write(&gyro_acc->private.device, &mem_info);
         }
     }
 

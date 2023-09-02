@@ -84,7 +84,6 @@ typedef struct
     gyro_acc_read_acc_async_t read_acc_async;
 }gyro_acc_driver_t;
 
-
 /* ************************************* Public variables *************************************** */
 
 /* ************************************* Public functions *************************************** */
