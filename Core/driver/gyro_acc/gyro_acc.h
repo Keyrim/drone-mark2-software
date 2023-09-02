@@ -62,7 +62,7 @@ typedef struct
 
 
 
-typedef int (*gyro_acc_init_t)(gyro_acc_t *gyro_acc);
+typedef int (*gyro_acc_init_t)(gyro_acc_t *gyro_acc, bus_t *bus);
 typedef int (*gyro_acc_read_all_t)(gyro_acc_t *gyro_acc);
 typedef int (*gyro_acc_read_gyro_t)(gyro_acc_t *gyro_acc);
 typedef int (*gyro_acc_read_acc_t)(gyro_acc_t *gyro_acc);

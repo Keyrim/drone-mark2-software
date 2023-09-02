@@ -26,6 +26,7 @@ static int i2c_mem_read_dma(dev_info_t* dev_info, mem_info_t* mem_info);
 static int i2c_write(dev_info_t* dev_info, uint8_t* data, uint8_t size);
 static int i2c_read(dev_info_t* dev_info, uint8_t* data, uint8_t size);
 static int i2c_deinit(void);
+static int i2c_is_ready(dev_info_t* dev_info);
 static inline bus_id_t i2c_get_bus_id(I2C_HandleTypeDef* hi2c);
 
 /* ************************************* Private variables ************************************** */
@@ -50,6 +51,7 @@ bus_driver_t bus_driver_i2c =
     .write = i2c_write,
     .read = i2c_read,
     .deinit = i2c_deinit,
+	.is_ready = i2c_is_ready
 };
 
 /* ************************************* Private functions ************************************** */
