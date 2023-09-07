@@ -23,6 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "bus.h"
+#include "gyro_acc.h"
 
 /* USER CODE END Includes */
 
@@ -88,6 +90,11 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
+  bus_t bus =
+  {
+    .driver = &i2c
+  }
 
   /* USER CODE END 2 */
 

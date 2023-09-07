@@ -1,30 +1,27 @@
 {
-    "env": {
-        "myDefaultIncludePath": [
-            "${workspaceFolder}"
-        ],
-        "myCompilerPath": "${env:ARM_TOOLCHAIN}/bin/arm-none-eabi-gcc.exe"
-    },
     "configurations": [
         {
-            "name": "Windows",
-            "intelliSenseMode": "clang-x64",
+            "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
-                "${env:ARM_TOOLCHAIN}/lib/gcc/arm-none-eabi/11.3.1/include/"
+                "c:/Users/tmagne/Documents/git/drone-mark2-software/**"
             ],
             "defines": [
-                "FOO",
-                "BAR=100"
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
             ],
-            "cStandard": "c11",
+            "windowsSdkVersion": "10.0.19041.0",
+            "cStandard": "c17",
             "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64",
+            "mergeConfigurations": false,
+            "compilerPath": "cl.exe",
+            "configurationProvider": "ms-vscode.cmake-tools",
             "browse": {
                 "path": [
-                    "${workspaceFolder}"
+                    "c:/Users/tmagne/Documents/git/drone-mark2-software"
                 ],
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
+                "limitSymbolsToIncludedHeaders": true
             }
         }
     ],
