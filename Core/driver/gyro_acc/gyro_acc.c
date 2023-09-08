@@ -1,14 +1,14 @@
 /**
- * @file bus.c
- * @brief Interface for the communication bus driver
+ * @file gyro_acc.c
+ * @brief Provide an init function to link a gyro_acc_type_t to a driver
  * @author Théo Magne
- * @date 14/07/2023
- * @see bus.h
+ * @date 08/09/2023
+ * @see gyro_acc.h
  */
 
 /* ************************************* Includes *********************************************** */
-#include "bus.h"
-#include "bus_i2c.h"
+#include "gyro_acc.h"
+#include "gyro_acc_mpu6050.h"
 
 /* ************************************* Private macros ***************************************** */
 
@@ -19,14 +19,23 @@
 /* ************************************* Private variables ************************************** */
 
 /* ************************************* Public variables *************************************** */
-bus_t bus_i2c_1 =
-{
-    .id = 0,
-    .driver = &bus_driver_i2c
-};
 
 /* ************************************* Private functions ************************************** */
 
 /* ************************************* Public functions *************************************** */
+int gyro_acc_init(gyro_acc_t *gyro_acc, gyro_acc_type_t type, bus_t *bus)
+{
+    int ret = -1;
+    switch(type)
+    {
+        case GYRO_ACC_MPU6050:
+            gyro_acc->driver = &gyro_acc_mpu6050_driver;
+            ret = gyro_acc->driver->init(gyro_acc, bus);
+            break;
+        default:
+            break;
+    }
+    return ret;
+}
 
 /* ************************************* Public callback functions ****************************** */

@@ -18,7 +18,7 @@
 
 
 /* ************************************* Private functions prototypes *************************** */
-static int i2c_init(void);
+static int i2c_init(bus_t *bus);
 static int i2c_mem_write(dev_info_t* dev_info, mem_info_t* mem_info);
 static int i2c_mem_read(dev_info_t* dev_info, mem_info_t* mem_info);
 static int i2c_mem_write_dma(dev_info_t* dev_info, mem_info_t* mem_info);
@@ -51,11 +51,11 @@ bus_driver_t bus_driver_i2c =
     .write = i2c_write,
     .read = i2c_read,
     .deinit = i2c_deinit,
-	.is_ready = i2c_is_ready
+    .is_ready = i2c_is_ready
 };
 
 /* ************************************* Private functions ************************************** */
-static int i2c_init(void)
+static int i2c_init(bus_t *bus)
 {
     return 0;
 }

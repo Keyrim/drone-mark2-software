@@ -23,9 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "bus.h"
-#include "gyro_acc.h"
-
+#include "app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,11 +88,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
-  bus_t bus =
-  {
-    .driver = &i2c
-  }
+  app_init();
 
   /* USER CODE END 2 */
 
@@ -102,6 +96,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    app_run();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -47,7 +47,7 @@ typedef struct
     uint8_t size;           /**< Data size */
 }mem_info_t;
 
-typedef int (*bus_init_t)(void);
+typedef int (*bus_init_t)(bus_t *bus);
 typedef int (*bus_is_device_ready_t)(dev_info_t* dev_info);
 typedef int (*bus_mem_write_t)(dev_info_t* dev_info, mem_info_t* mem_info);
 typedef int (*bus_mem_read_t)(dev_info_t* dev_info, mem_info_t* mem_info);
