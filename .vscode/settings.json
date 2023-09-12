@@ -7,6 +7,8 @@
   ],
   "files.associations": {
     "bus.h": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "math.h": "c",
+    "gyro_acc_mpu6050.h": "c"
   }
 }

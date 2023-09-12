@@ -7,6 +7,7 @@
  */
 
 /* ************************************* Includes *********************************************** */
+#include "stm32f4xx_hal.h"
 #include "app.h"
 #include "gyro_acc.h"
 #include "bus.h"
@@ -18,7 +19,14 @@
 /* ************************************* Private functions prototypes *************************** */
 
 /* ************************************* Private variables ************************************** */
-static gyro_acc_t gyro_acc = { 0 };
+static gyro_acc_t gyro_acc =
+{
+    .config =
+    {
+        .acc = ACC_RANGE_MEDIUM,
+        .gyro = GYRO_RANGE_MEDIUM
+    }
+};
 
 /* ************************************* Public variables *************************************** */
 
@@ -43,6 +51,15 @@ void app_init()
 
 void app_run()
 {
-
+	static int result = 0;
+	if (result == 0)
+	{
+		result = gyro_acc.driver->read_all_async(&gyro_acc);
+	}
+	else
+	{
+		for(;;);
+	}
+    HAL_Delay(10);
 }
 /* ************************************* Public callback functions ****************************** */

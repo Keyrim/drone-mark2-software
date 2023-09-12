@@ -15,12 +15,12 @@
 #include "bus.h"
 
 /* ************************************* Public macros ****************************************** */
+#define GYRO_ACC_COUNT 1
 
 /* ************************************* Public type definition ********************************* */
 typedef enum
 {
-    GYRO_ACC_MPU6050 = 0,
-    GYRO_ACC_ERROR
+    GYRO_ACC_MPU6050 = 0
 }gyro_acc_type_t;
 
 typedef enum
@@ -77,6 +77,7 @@ typedef struct gyro_acc_t
     struct config_t {
         gyro_range_t gyro;
         acc_range_t acc;
+        gyro_acc_read_cb_t read_cb;
     } config;
     struct data_t {
         vector3_t gyro;
@@ -84,9 +85,10 @@ typedef struct gyro_acc_t
     } data;
     struct private_t {
         dev_info_t device;
-        gyro_acc_read_cb_t read_cb;
         float gyro_conv_factor;
         float acc_conv_factor;
+        uint8_t raw_gyro[6];
+        uint8_t raw_acc[6];
     } private;
     gyro_acc_driver_t *driver;
 }gyro_acc_t;

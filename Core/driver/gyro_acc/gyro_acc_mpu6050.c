@@ -8,6 +8,7 @@
 
 /* ************************************* Includes *********************************************** */
 #include <math.h>
+#include "stm32f4xx_hal.h"
 #include "bus.h"
 #include "gyro_acc.h"
 #include "gyro_acc_mpu6050.h"
@@ -15,55 +16,55 @@
 
 /* ************************************* Private macros ***************************************** */
 /* Default I2C address */
-#define MPU6050_I2C_ADDR			0xD0
+#define MPU6050_I2C_ADDR            0xD0
 
 /* MPU6050 registers */
-#define MPU6050_AUX_VDDIO			0x01
-#define MPU6050_SMPLRT_DIV			0x19
-#define MPU6050_CONFIG				0x1A
-#define MPU6050_GYRO_CONFIG			0x1B
-#define MPU6050_ACCEL_CONFIG		0x1C
-#define MPU6050_MOTION_THRESH		0x1F
-#define MPU6050_INT_PIN_CFG			0x37
-#define MPU6050_INT_ENABLE			0x38
-#define MPU6050_INT_STATUS			0x3A
-#define MPU6050_ACCEL_XOUT_H		0x3B
-#define MPU6050_ACCEL_XOUT_L		0x3C
-#define MPU6050_ACCEL_YOUT_H		0x3D
-#define MPU6050_ACCEL_YOUT_L		0x3E
-#define MPU6050_ACCEL_ZOUT_H		0x3F
-#define MPU6050_ACCEL_ZOUT_L		0x40
-#define MPU6050_TEMP_OUT_H			0x41
-#define MPU6050_TEMP_OUT_L			0x42
-#define MPU6050_GYRO_XOUT_H			0x43
-#define MPU6050_GYRO_XOUT_L			0x44
-#define MPU6050_GYRO_YOUT_H			0x45
-#define MPU6050_GYRO_YOUT_L			0x46
-#define MPU6050_GYRO_ZOUT_H			0x47
-#define MPU6050_GYRO_ZOUT_L			0x48
-#define MPU6050_MOT_DETECT_STATUS	0x61
-#define MPU6050_SIGNAL_PATH_RESET	0x68
-#define MPU6050_MOT_DETECT_CTRL		0x69
-#define MPU6050_USER_CTRL			0x6A
-#define MPU6050_PWR_MGMT_1			0x6B
-#define MPU6050_PWR_MGMT_2			0x6C
-#define MPU6050_FIFO_COUNTH			0x72
-#define MPU6050_FIFO_COUNTL			0x73
-#define MPU6050_FIFO_R_W			0x74
-#define MPU6050_WHO_AM_I			0x75
-#define MPU6050_READ				0x80
+#define MPU6050_AUX_VDDIO           0x01
+#define MPU6050_SMPLRT_DIV          0x19
+#define MPU6050_CONFIG              0x1A
+#define MPU6050_GYRO_CONFIG         0x1B
+#define MPU6050_ACCEL_CONFIG        0x1C
+#define MPU6050_MOTION_THRESH       0x1F
+#define MPU6050_INT_PIN_CFG         0x37
+#define MPU6050_INT_ENABLE          0x38
+#define MPU6050_INT_STATUS          0x3A
+#define MPU6050_ACCEL_XOUT_H        0x3B
+#define MPU6050_ACCEL_XOUT_L        0x3C
+#define MPU6050_ACCEL_YOUT_H        0x3D
+#define MPU6050_ACCEL_YOUT_L        0x3E
+#define MPU6050_ACCEL_ZOUT_H        0x3F
+#define MPU6050_ACCEL_ZOUT_L        0x40
+#define MPU6050_TEMP_OUT_H          0x41
+#define MPU6050_TEMP_OUT_L          0x42
+#define MPU6050_GYRO_XOUT_H         0x43
+#define MPU6050_GYRO_XOUT_L         0x44
+#define MPU6050_GYRO_YOUT_H         0x45
+#define MPU6050_GYRO_YOUT_L         0x46
+#define MPU6050_GYRO_ZOUT_H         0x47
+#define MPU6050_GYRO_ZOUT_L         0x48
+#define MPU6050_MOT_DETECT_STATUS   0x61
+#define MPU6050_SIGNAL_PATH_RESET   0x68
+#define MPU6050_MOT_DETECT_CTRL     0x69
+#define MPU6050_USER_CTRL           0x6A
+#define MPU6050_PWR_MGMT_1          0x6B
+#define MPU6050_PWR_MGMT_2          0x6C
+#define MPU6050_FIFO_COUNTH         0x72
+#define MPU6050_FIFO_COUNTL         0x73
+#define MPU6050_FIFO_R_W            0x74
+#define MPU6050_WHO_AM_I            0x75
+#define MPU6050_READ                0x80
 
 /* Gyroscope sensitivities in °/s */
-#define MPU6050_GYRO_SENS_250		((float) 131)
-#define MPU6050_GYRO_SENS_500		((float) 65.5)
-#define MPU6050_GYRO_SENS_1000		((float) 32.8)
-#define MPU6050_GYRO_SENS_2000		((float) 16.4)
+#define MPU6050_GYRO_SENS_250       ((float) 131)
+#define MPU6050_GYRO_SENS_500       ((float) 65.5)
+#define MPU6050_GYRO_SENS_1000      ((float) 32.8)
+#define MPU6050_GYRO_SENS_2000      ((float) 16.4)
 
 /* Accelerometer sensitivities in g */
-#define MPU6050_ACCE_SENS_2			((float) 16384)
-#define MPU6050_ACCE_SENS_4			((float) 8192)
-#define MPU6050_ACCE_SENS_8			((float) 4096)
-#define MPU6050_ACCE_SENS_16		((float) 2048)
+#define MPU6050_ACCE_SENS_2         ((float) 16384)
+#define MPU6050_ACCE_SENS_4         ((float) 8192)
+#define MPU6050_ACCE_SENS_8         ((float) 4096)
+#define MPU6050_ACCE_SENS_16        ((float) 2048)
 
 /* ************************************* Private type definition ******************************** */
 
@@ -72,10 +73,10 @@
  */
 typedef enum
 {
-	MPU_ACC_2G = 0,
-	MPU_ACC_4G,
-	MPU_ACC_8G,
-	MPU_ACC_16G
+    MPU_ACC_2G = 0,
+    MPU_ACC_4G,
+    MPU_ACC_8G,
+    MPU_ACC_16G
 } mpu6050_acc_range_t;
 
 /**
@@ -83,35 +84,62 @@ typedef enum
  */
 typedef enum
 {
-	MPU_GYRO_250s = 0,
-	MPU_GYRO_500s,
-	MPU_GYRO_1000s,
-	MPU_GYRO_2000s
+    MPU_GYRO_250s = 0,
+    MPU_GYRO_500s,
+    MPU_GYRO_1000s,
+    MPU_GYRO_2000s
 } mpu6050_gyro_range_t;
+
+typedef struct gyro_acc_bus_id_association_t
+{
+    uint8_t bus_id;
+    gyro_acc_t *gyro_acc;
+} gyro_acc_bus_id_association_t;
 
 
 /* ************************************* Private functions prototypes *************************** */
 static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus);
+static int mpu6050_read_gyro(gyro_acc_t *gyro_acc);
+static int mpu6050_read_acc(gyro_acc_t *gyro_acc);
+static int mpu6050_read_all(gyro_acc_t *gyro_acc);
+static int mpu6050_read_gyro_async(gyro_acc_t *gyro_acc);
+static int mpu6050_read_acc_async(gyro_acc_t *gyro_acc);
+static int mpu6050_read_all_async(gyro_acc_t *gyro_acc);
+
+static void mpu6050_gyro_async_cb(uint8_t bus_id);
+static void mpu6050_acc_async_cb(uint8_t bus_id);
+static void mpu6050_all_async_cb1(uint8_t bus_id);
+static void mpu6050_all_async_cb2(uint8_t bus_id);
 
 /* ************************************* Private variables ************************************** */
-const static float mpu5050_gyro_data_to_rad_s[] = {
+const static float mpu6050_gyro_data_to_rad_s[] =
+{
     (1 / MPU6050_GYRO_SENS_250) * M_PI / 180.0f,
     (1 / MPU6050_GYRO_SENS_500) * M_PI / 180.0f,
     (1 / MPU6050_GYRO_SENS_1000) * M_PI / 180.0f,
     (1 / MPU6050_GYRO_SENS_2000) * M_PI / 180.0f
 };
 
-const static float mpu5050_acc_data_to_g[] = {
+const static float mpu6050_acc_data_to_g[] =
+{
     (1 / MPU6050_ACCE_SENS_2),
     (1 / MPU6050_ACCE_SENS_4),
     (1 / MPU6050_ACCE_SENS_8),
     (1 / MPU6050_ACCE_SENS_16)
 };
 
+static gyro_acc_t *gyro_acc_pending_cb[GYRO_ACC_COUNT] = { 0 };
+
 /* ************************************* Public variables *************************************** */
 gyro_acc_driver_t gyro_acc_mpu6050_driver =
 {
-    .init = mpu6050_init
+    .init = mpu6050_init,
+    .read_all = mpu6050_read_all,
+    .read_gyro = mpu6050_read_gyro,
+    .read_acc = mpu6050_read_acc,
+    .read_all_async = mpu6050_read_all_async,
+    .read_gyro_async = mpu6050_read_gyro_async,
+    .read_acc_async = mpu6050_read_acc_async
 };
 
 /* ************************************* Private functions ************************************** */
@@ -164,8 +192,8 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
     gyro_acc->private.device.bus = bus;
     mpu6050_acc_range_t acc_mpu_range = mpu6050_get_acc_range_from_config(gyro_acc->config.acc);
     mpu6050_gyro_range_t gyro_mpu_range = mpu6050_get_gyro_range_from_config(gyro_acc->config.gyro);
-    gyro_acc->config.acc = mpu5050_acc_data_to_g[acc_mpu_range];
-    gyro_acc->config.gyro = mpu5050_gyro_data_to_rad_s[gyro_mpu_range];
+    gyro_acc->private.acc_conv_factor = mpu6050_acc_data_to_g[acc_mpu_range];
+    gyro_acc->private.gyro_conv_factor = mpu6050_gyro_data_to_rad_s[gyro_mpu_range];
 
     /* Configure the MPU6050 */
     /* Check if the mpu answers */
@@ -184,7 +212,8 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
     }
 
     if (ret == 0)
-    {
+    {   /* Wait for the mpu to start */
+        HAL_Delay(3);
         /* Set the clock to use */
         mem_info_t mem_info =
         {
@@ -234,6 +263,201 @@ static int mpu6050_init(gyro_acc_t *gyro_acc, bus_t *bus)
 
     return ret;
 }
+
+static inline int mpu6050_read_reg(gyro_acc_t *gyro_acc, uint8_t reg_addr, uint8_t* data, uint8_t size)
+{
+    mem_info_t mem_info = {
+        .addr = reg_addr,
+        .data = data,
+        .size = size
+    };
+    return gyro_acc->private.device.bus->driver->mem_read(&gyro_acc->private.device, &mem_info);
+}
+
+static inline int mpu6050_read_reg_dma(gyro_acc_t *gyro_acc, uint8_t reg_addr, uint8_t* data, uint8_t size)
+{
+    mem_info_t mem_info = {
+        .addr = reg_addr,
+        .data = data,
+        .size = size
+    };
+    return gyro_acc->private.device.bus->driver->mem_read_dma(&gyro_acc->private.device, &mem_info);
+}
+
+static inline void mpu6050_convert_gyro(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_gyro;
+    int16_t gx = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+    int16_t gy = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+    int16_t gz = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+    gyro_acc->data.gyro.x = gx * gyro_acc->private.gyro_conv_factor;
+    gyro_acc->data.gyro.y = gy * gyro_acc->private.gyro_conv_factor;
+    gyro_acc->data.gyro.z = gz * gyro_acc->private.gyro_conv_factor;
+}
+
+static inline void mpu6050_convert_acc(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_acc;
+    int16_t ax = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+    int16_t ay = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+    int16_t az = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+    gyro_acc->data.acc.x = ax * gyro_acc->private.acc_conv_factor;
+    gyro_acc->data.acc.y = ay * gyro_acc->private.acc_conv_factor;
+    gyro_acc->data.acc.z = az * gyro_acc->private.acc_conv_factor;
+}
+
+static int mpu6050_read_gyro(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_gyro;
+    int ret = mpu6050_read_reg(gyro_acc, MPU6050_GYRO_XOUT_H, raw_data, 6);
+    if (ret == 0)
+    {
+        mpu6050_convert_gyro(gyro_acc);
+    }
+    return ret;
+}
+
+static int mpu6050_read_acc(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_acc;
+    int ret = mpu6050_read_reg(gyro_acc, MPU6050_ACCEL_XOUT_H, raw_data, 6);
+    if (ret == 0)
+    {
+        mpu6050_convert_acc(gyro_acc);
+    }
+    return ret;
+}
+
+static int mpu6050_read_all(gyro_acc_t *gyro_acc)
+{
+    int ret = mpu6050_read_acc(gyro_acc);
+    if (ret == 0)
+    {
+        ret = mpu6050_read_gyro(gyro_acc);
+    }
+
+    return ret;
+}
+
+
+static inline void mpu6050_register_cb(gyro_acc_t *gyro_acc)
+{
+    for(uint8_t i = 0; i < GYRO_ACC_COUNT; i++)
+    {
+        if (gyro_acc_pending_cb[i] == NULL)
+        {
+            gyro_acc_pending_cb[i] = gyro_acc;
+            break;
+        }
+    }
+}
+
+static int mpu6050_read_gyro_async(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_gyro;
+    int ret = mpu6050_read_reg_dma(gyro_acc, MPU6050_GYRO_XOUT_H, raw_data, 6);
+    if (ret == 0)
+    {
+        gyro_acc->private.device.cb->transfer_cplt = mpu6050_gyro_async_cb;
+        mpu6050_register_cb(gyro_acc);
+    }
+    return ret;
+}
+
+static int mpu6050_read_acc_async(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_acc;
+    int ret = mpu6050_read_reg_dma(gyro_acc, MPU6050_ACCEL_XOUT_H, raw_data, 6);
+    if (ret == 0)
+    {
+        gyro_acc->private.device.cb->transfer_cplt = mpu6050_acc_async_cb;
+        mpu6050_register_cb(gyro_acc);
+    }
+    return ret;
+}
+
+static int mpu6050_read_all_async(gyro_acc_t *gyro_acc)
+{
+    uint8_t *raw_data = gyro_acc->private.raw_gyro;
+    int ret = mpu6050_read_reg_dma(gyro_acc, MPU6050_GYRO_XOUT_H, raw_data, 6);
+    if (ret == 0)
+    {
+        gyro_acc->private.device.cb->transfer_cplt = mpu6050_all_async_cb1;
+        mpu6050_register_cb(gyro_acc);
+    }
+    return ret;
+}
+
+static inline gyro_acc_t* mpu6050_get_dev_from_bus_id(uint8_t bus_id)
+{
+    gyro_acc_t *gyro_acc = NULL;
+    for(uint8_t i = 0; i < GYRO_ACC_COUNT; i++)
+    {
+        if (gyro_acc_pending_cb[i] != NULL)
+        {
+            if (gyro_acc_pending_cb[i]->private.device.bus->id == bus_id)
+            {
+                gyro_acc = gyro_acc_pending_cb[i];
+                gyro_acc_pending_cb[i] = NULL;
+                break;
+            }
+        }
+    }
+    return gyro_acc;
+}
+
+static void mpu6050_gyro_async_cb(uint8_t bus_id)
+{
+    gyro_acc_t *gyro_acc = mpu6050_get_dev_from_bus_id(bus_id);
+    if (gyro_acc != NULL)
+    {
+        mpu6050_convert_gyro(gyro_acc);
+    }
+}
+
+static void mpu6050_acc_async_cb(uint8_t bus_id)
+{
+    gyro_acc_t *gyro_acc = mpu6050_get_dev_from_bus_id(bus_id);
+    if (gyro_acc != NULL)
+    {
+        mpu6050_convert_acc(gyro_acc);
+        if (gyro_acc->config.read_cb != NULL)
+        {
+            gyro_acc->config.read_cb();
+        }
+    }
+}
+
+static void mpu6050_all_async_cb1(uint8_t bus_id)
+{
+    gyro_acc_t *gyro_acc = mpu6050_get_dev_from_bus_id(bus_id);
+    if (gyro_acc != NULL)
+    {
+        uint8_t *raw_data = gyro_acc->private.raw_gyro;
+        int ret = mpu6050_read_reg_dma(gyro_acc, MPU6050_ACCEL_XOUT_H, raw_data, 6);
+        if(ret == 0)
+        {
+            gyro_acc->private.device.cb->transfer_cplt = mpu6050_all_async_cb2;
+            mpu6050_convert_gyro(gyro_acc);
+        }
+    }
+}
+
+static void mpu6050_all_async_cb2(uint8_t bus_id)
+{
+    gyro_acc_t *gyro_acc = mpu6050_get_dev_from_bus_id(bus_id);
+    if (gyro_acc != NULL)
+    {
+        mpu6050_convert_acc(gyro_acc);
+        if (gyro_acc->config.read_cb != NULL)
+        {
+            gyro_acc->config.read_cb();
+        }
+    }
+}
+
+
+
 /* ************************************* Public functions *************************************** */
 
 /* ************************************* Public callback functions ****************************** */

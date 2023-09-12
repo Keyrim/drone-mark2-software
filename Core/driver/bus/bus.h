@@ -22,8 +22,8 @@ typedef enum
 } bus_id_t;
 
 
-typedef void (*bus_transfer_complete_cb_t)(void);
-typedef void (*bus_transfer_half_complete_cb_t)(void);
+typedef void (*bus_transfer_complete_cb_t)(uint8_t bus_id);
+typedef void (*bus_transfer_half_complete_cb_t)(uint8_t bus_id);
 
 typedef struct
 {

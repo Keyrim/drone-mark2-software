@@ -147,12 +147,14 @@ static inline bus_id_t i2c_get_bus_id(I2C_HandleTypeDef* hi2c)
 }
 
 /* ************************************* Public functions *************************************** */
+
+/* ************************************* Public callback functions ****************************** */
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
     bus_id_t bus_id = i2c_get_bus_id(hi2c);
     if(bus_cb[bus_id].transfer_cplt != NULL)
     {
-        bus_cb[bus_id].transfer_cplt();
+        bus_cb[bus_id].transfer_cplt(bus_id);
     }
     memset(&bus_cb[bus_id], 0, sizeof(bus_cb_t));
 }
@@ -162,9 +164,7 @@ void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
     bus_id_t bus_id = i2c_get_bus_id(hi2c);
     if(bus_cb[bus_id].transfer_cplt != NULL)
     {
-        bus_cb[bus_id].transfer_cplt();
+        bus_cb[bus_id].transfer_cplt(bus_id);
     }
     memset(&bus_cb[bus_id], 0, sizeof(bus_cb_t));
 }
-
-/* ************************************* Public callback functions ****************************** */
